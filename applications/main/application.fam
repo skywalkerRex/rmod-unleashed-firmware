@@ -15,6 +15,7 @@ App(
         "archive",
         "clock",
         "unirfremix",
+        "totp",
     ],
 )
 
