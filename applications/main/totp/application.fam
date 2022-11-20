@@ -12,7 +12,7 @@ App(
         "input", 
         "notification"
     ],
-    icon="A_Clock_14",
+    icon="A_Totp_14",
     stack_size=2 * 1024,
     order=20,
 )

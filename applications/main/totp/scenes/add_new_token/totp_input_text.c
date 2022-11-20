@@ -12,32 +12,6 @@ size_t strnlen(const char* s, size_t maxlen) {
     return len;
 }
 
-void view_draw(View* view, Canvas* canvas) {
-    furi_assert(view);
-    if(view->draw_callback) {
-        void* data = view_get_model(view);
-        view->draw_callback(canvas, data);
-        view_unlock_model(view);
-    }
-}
-
-bool view_input(View* view, InputEvent* event) {
-    furi_assert(view);
-    if(view->input_callback) {
-        return view->input_callback(event, view->context);
-    } else {
-        return false;
-    }
-}
-
-void view_unlock_model(View* view) {
-    furi_assert(view);
-    if(view->model_type == ViewModelTypeLocking) {
-        ViewModelLocking* model = (ViewModelLocking*)(view->model);
-        furi_check(furi_mutex_release(model->mutex) == FuriStatusOk);
-    }
-}
-
 static void commit_text_input_callback(void* context) {
     InputTextSceneState* text_input_state = (InputTextSceneState*)context;
     if(text_input_state->callback != 0) {

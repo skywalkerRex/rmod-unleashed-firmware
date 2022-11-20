@@ -1,0 +1,1 @@
+./fbt COMPACT=1 DEBUG=0 DIST_SUFFIX="rmod-0.71.1" updater_package
