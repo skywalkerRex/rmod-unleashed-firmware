@@ -10,5 +10,5 @@ App(
     ],
     icon="A_UniRFRemix_14",
     stack_size=4 * 1024,
-    order=11,
+    order=12,
 )

@@ -14,5 +14,5 @@ App(
     ],
     icon="A_Totp_14",
     stack_size=2 * 1024,
-    order=20,
+    order=10,
 )
