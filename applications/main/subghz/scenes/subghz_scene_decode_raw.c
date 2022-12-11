@@ -137,7 +137,7 @@ bool subghz_scene_decode_raw_next(SubGhz* subghz) {
             subghz->decode_raw_state = SubGhzDecodeRawStateLoaded;
             subghz->state_notifications = SubGhzNotificationStateIDLE;
 
-            subghz_view_receiver_add_data_progress(subghz->subghz_receiver, "100%");
+            subghz_view_receiver_add_data_progress(subghz->subghz_receiver, "Done!");
             return false; // No more samples available
         }
     }
@@ -212,6 +212,9 @@ bool subghz_scene_decode_raw_on_event(void* context, SceneManagerEvent event) {
         case SubGhzCustomEventViewReceiverBack:
             subghz->decode_raw_state = SubGhzDecodeRawStateStart;
             subghz->txrx->idx_menu_chosen = 0;
+            subghz->in_decoder_scene = false;
+            subghz->in_decoder_scene_skip = false;
+
             subghz_receiver_set_rx_callback(subghz->txrx->receiver, NULL, subghz);
 
             if(subghz_file_encoder_worker_is_running(subghz->decode_raw_file_worker_encoder)) {

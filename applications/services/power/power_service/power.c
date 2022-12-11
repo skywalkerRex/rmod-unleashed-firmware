@@ -63,13 +63,49 @@ void power_draw_battery_callback(Canvas* canvas, void* context) {
             canvas_draw_box(canvas, 2, 2, (power->info.charge + 4) / 5, 4);
         }
 
+        // TODO: Verify if it displays correctly with custom battery skins !!!
+        if(power->info.voltage_battery_charging < 4.2) {
+            // Battery charging voltage is modified, indicate with cross pattern
+            canvas_invert_color(canvas);
+            uint8_t battery_bar_width = (power->info.charge + 4) / 5;
+            bool cross_odd = false;
+            // Start 1 further in from the battery bar's x position
+            for(uint8_t x = 3; x <= battery_bar_width; x++) {
+                // Cross pattern is from the center of the battery bar
+                // y = 2 + 1 (inset) + 1 (for every other)
+                canvas_draw_dot(canvas, x, 3 + (uint8_t)cross_odd);
+                cross_odd = !cross_odd;
+            }
+            canvas_invert_color(canvas);
+        }
+
         if(power->state == PowerStateCharging) {
             canvas_set_bitmap_mode(canvas, 1);
-            canvas_set_color(canvas, ColorWhite);
             // TODO: replace -1 magic for uint8_t with re-framing
-            canvas_draw_icon(canvas, 8, -1, &I_Charging_lightning_mask_9x10);
-            canvas_set_color(canvas, ColorBlack);
-            canvas_draw_icon(canvas, 8, -1, &I_Charging_lightning_9x10);
+            if(power->displayBatteryPercentage == 1) {
+                canvas_set_color(canvas, ColorBlack);
+                canvas_draw_box(canvas, 1, 1, 22, 6);
+                canvas_draw_icon(canvas, 2, -1, &I_Charging_lightning_9x10);
+                canvas_set_color(canvas, ColorWhite);
+                canvas_draw_icon(canvas, 2, -1, &I_Charging_lightning_mask_9x10);
+                canvas_set_font(canvas, FontBatteryPercent);
+                canvas_draw_str_aligned(
+                    canvas, 16, 4, AlignCenter, AlignCenter, batteryPercentile);
+            } else if(power->displayBatteryPercentage == 2) {
+                canvas_set_color(canvas, ColorWhite);
+                canvas_draw_box(canvas, 1, 1, 22, 6);
+                canvas_draw_icon(canvas, 2, -1, &I_Charging_lightning_9x10);
+                canvas_set_color(canvas, ColorBlack);
+                canvas_draw_icon(canvas, 2, -1, &I_Charging_lightning_mask_9x10);
+                canvas_set_font(canvas, FontBatteryPercent);
+                canvas_draw_str_aligned(
+                    canvas, 16, 4, AlignCenter, AlignCenter, batteryPercentile);
+            } else {
+                canvas_set_color(canvas, ColorWhite);
+                canvas_draw_icon(canvas, 8, -1, &I_Charging_lightning_mask_9x10);
+                canvas_set_color(canvas, ColorBlack);
+                canvas_draw_icon(canvas, 8, -1, &I_Charging_lightning_9x10);
+            }
             canvas_set_bitmap_mode(canvas, 0);
         }
     } else {
@@ -183,6 +219,7 @@ static bool power_update_info(Power* power) {
     info.capacity_full = furi_hal_power_get_battery_full_capacity();
     info.current_charger = furi_hal_power_get_battery_current(FuriHalPowerICCharger);
     info.current_gauge = furi_hal_power_get_battery_current(FuriHalPowerICFuelGauge);
+    info.voltage_battery_charging = furi_hal_power_get_battery_charging_voltage();
     info.voltage_charger = furi_hal_power_get_battery_voltage(FuriHalPowerICCharger);
     info.voltage_gauge = furi_hal_power_get_battery_voltage(FuriHalPowerICFuelGauge);
     info.voltage_vbus = furi_hal_power_get_usb_voltage();
